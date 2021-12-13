@@ -68,6 +68,16 @@ int main(int argc, char* argv[]) {
          *   - Call download_fragment(TARGET_URL, from, to, outfile); 
          *   - exit(0);
          */
+         int pid = fork();
+         if (pid == 0) {
+        	/*printf("pid %d en el hijo\n", pid);*/
+        	printf("\t chunk #%d: Range %d-%d \n", i, from, to);
+        	char outfile [16]; 
+        	sprintf(outfile, "%s-%d", CHUNK_FILENAME_PREFIX, i);
+        	/*printf("nombre del fichero: %s\n",outfile);*/
+        	download_fragment(TARGET_URL, from, to, outfile); 
+        	exit(0);
+        	
 
 
         if (download_mode == 'S') {
@@ -76,6 +86,8 @@ int main(int argc, char* argv[]) {
              * downloading the current chunk if the download mode is S
              * (sequential)
              */
+             /*printf("cerrando con S\n",pid);*/
+             wait(NULL);
         }
     }
 
@@ -84,6 +96,9 @@ int main(int argc, char* argv[]) {
          * TODO: wait until all the downloads have finished if the download mode
          * is P (parallel)
          */
+         /*printf("cerrando con P\n");*/
+         for (i=1; i <= num_processes; i++){
+         	wait(NULL);
     }
     printf ("-- End downloader --\n");
 }
